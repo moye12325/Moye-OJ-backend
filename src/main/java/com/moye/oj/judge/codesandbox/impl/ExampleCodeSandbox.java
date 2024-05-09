@@ -3,7 +3,7 @@ package com.moye.oj.judge.codesandbox.impl;
 import com.moye.oj.judge.codesandbox.CodeSandbox;
 import com.moye.oj.judge.codesandbox.model.ExecuteCodeRequest;
 import com.moye.oj.judge.codesandbox.model.ExecuteCodeResponse;
-import com.moye.oj.model.dto.questionsubmit.JudgeInfo;
+import com.moye.oj.judge.codesandbox.model.JudgeInfo;
 import com.moye.oj.model.enums.JudgeInfoEnum;
 import com.moye.oj.model.enums.QuestionSubmitStatusEnum;
 

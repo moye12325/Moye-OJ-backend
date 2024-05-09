@@ -4,8 +4,7 @@ import com.moye.oj.judge.strategy.DefaultJudgeStrategy;
 import com.moye.oj.judge.strategy.JavaLanguageJudgeStrategy;
 import com.moye.oj.judge.strategy.JudgeContext;
 import com.moye.oj.judge.strategy.JudgeStrategy;
-import com.moye.oj.model.dto.questionsubmit.JudgeInfo;
-import com.moye.oj.model.entity.Question;
+import com.moye.oj.judge.codesandbox.model.JudgeInfo;
 import com.moye.oj.model.entity.QuestionSubmit;
 import org.springframework.stereotype.Service;
 

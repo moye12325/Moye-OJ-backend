@@ -3,7 +3,7 @@ package com.moye.oj.judge.strategy;
 import cn.hutool.json.JSONUtil;
 import com.moye.oj.model.dto.question.JudgeCase;
 import com.moye.oj.model.dto.question.JudgeConfig;
-import com.moye.oj.model.dto.questionsubmit.JudgeInfo;
+import com.moye.oj.judge.codesandbox.model.JudgeInfo;
 import com.moye.oj.model.entity.Question;
 import com.moye.oj.model.enums.JudgeInfoEnum;
 

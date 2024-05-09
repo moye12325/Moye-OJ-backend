@@ -1,6 +1,6 @@
 package com.moye.oj.judge.strategy;
 
-import com.moye.oj.model.dto.questionsubmit.JudgeInfo;
+import com.moye.oj.judge.codesandbox.model.JudgeInfo;
 
 /**
  * 判题策略
