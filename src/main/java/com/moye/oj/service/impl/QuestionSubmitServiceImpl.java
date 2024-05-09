@@ -7,37 +7,30 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.moye.oj.common.ErrorCode;
 import com.moye.oj.constant.CommonConstant;
 import com.moye.oj.exception.BusinessException;
-import com.moye.oj.model.dto.question.QuestionQueryRequest;
+import com.moye.oj.judge.JudgeService;
+import com.moye.oj.judge.JudgeServiceImpl;
 import com.moye.oj.model.dto.questionsubmit.QuestionSubmitAddRequest;
 import com.moye.oj.model.dto.questionsubmit.QuestionSubmitQueryRequest;
 import com.moye.oj.model.entity.Question;
-import com.moye.oj.model.entity.QuestionSubmit;
 import com.moye.oj.model.entity.QuestionSubmit;
 import com.moye.oj.model.entity.User;
 import com.moye.oj.model.enums.QuestionSubmitLanguageEnum;
 import com.moye.oj.model.enums.QuestionSubmitStatusEnum;
 import com.moye.oj.model.vo.QuestionSubmitVO;
-import com.moye.oj.model.vo.QuestionVO;
-import com.moye.oj.model.vo.UserVO;
 import com.moye.oj.service.QuestionService;
-import com.moye.oj.service.QuestionSubmitService;
 import com.moye.oj.service.QuestionSubmitService;
 import com.moye.oj.mapper.QuestionSubmitMapper;
 import com.moye.oj.service.UserService;
 import com.moye.oj.utils.SqlUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 /**
@@ -52,8 +45,12 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
     @Resource
     private QuestionService questionService;
 
-    @Autowired
+    @Resource
     private UserService userService;
+
+    @Resource
+    @Lazy
+    private JudgeService judgeService;
 
     /**
      * 提交
@@ -92,7 +89,12 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
         if (!save) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "数据插入失败");
         }
-        return questionSubmit.getId();
+        // 执行判题服务
+        long questionSubmitId = questionSubmit.getId();
+        CompletableFuture.runAsync(() -> {
+            judgeService.doJudge(questionSubmitId);
+        });
+        return questionSubmitId;
     }
 
     @Override
@@ -152,8 +154,8 @@ public class QuestionSubmitServiceImpl extends ServiceImpl<QuestionSubmitMapper,
             return questionSubmitVOPage;
         }
         List<QuestionSubmitVO> questionSubmitVOList = questionSubmitList.stream()
-                        .map(questionSubmit -> getQuestionSubmitVO(questionSubmit,loginUser))
-                                .collect(Collectors.toList());
+                .map(questionSubmit -> getQuestionSubmitVO(questionSubmit, loginUser))
+                .collect(Collectors.toList());
 
         questionSubmitVOPage.setRecords(questionSubmitVOList);
         return questionSubmitVOPage;
