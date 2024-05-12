@@ -8,6 +8,7 @@ import com.moye.oj.model.entity.Question;
 import com.moye.oj.model.enums.JudgeInfoEnum;
 
 import java.util.List;
+import java.util.Optional;
 
 public class JavaLanguageJudgeStrategy implements JudgeStrategy {
     /**
@@ -17,9 +18,9 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy {
     @Override
     public JudgeInfo doJudge(JudgeContext judgeContext) {
 
-        JudgeInfo executeCodeResponseJudgeInfo = judgeContext.getJudgeInfo();
-        long responseJudgeInfoMemory = executeCodeResponseJudgeInfo.getMemory();
-        long responseJudgeInfoTime = executeCodeResponseJudgeInfo.getTime();
+        JudgeInfo JudgeInfo = judgeContext.getJudgeInfo();
+        long memory = Optional.ofNullable(JudgeInfo.getMemory()).orElse(0L); ;
+        long time =  Optional.ofNullable(JudgeInfo.getTime()).orElse(0L);
         List<String> inputList = judgeContext.getInputList();
         List<String> outputList = judgeContext.getOutputList();
         Question question = judgeContext.getQuestion();
@@ -28,8 +29,8 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy {
         JudgeInfoEnum judgeInfoEnum = JudgeInfoEnum.ACCEPTED;
 
         JudgeInfo judgeInfoResponse = new JudgeInfo();
-        judgeInfoResponse.setMemory(responseJudgeInfoMemory);
-        judgeInfoResponse.setTime(responseJudgeInfoTime);
+        judgeInfoResponse.setMemory(memory);
+        judgeInfoResponse.setTime(time);
         judgeInfoResponse.setMessage(judgeInfoEnum.getValue());
 
         if (outputList.size() != inputList.size()) {
@@ -50,13 +51,13 @@ public class JavaLanguageJudgeStrategy implements JudgeStrategy {
 
         long memoryLimit = judgeConfig.getMemoryLimit();
         long timeLimit = judgeConfig.getTimeLimit();
-        if (responseJudgeInfoMemory > memoryLimit) {
+        if (memory > memoryLimit) {
             judgeInfoEnum = JudgeInfoEnum.MEMORY_LIMIT_EXCEEDED;
             return judgeInfoResponse;
         }
         //假设Java执行需要少计算10s
         long JAVA_PROGRAM_TIME_COST = 10000L;
-        if ((responseJudgeInfoTime - JAVA_PROGRAM_TIME_COST) > timeLimit) {
+        if ((time - JAVA_PROGRAM_TIME_COST) > timeLimit) {
             judgeInfoEnum = JudgeInfoEnum.TIME_LIMIT_EXCEEDED;
             return judgeInfoResponse;
         }
